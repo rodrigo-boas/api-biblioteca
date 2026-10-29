@@ -1,7 +1,6 @@
 package exercicio.api.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class Livro {
     private String isbn;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer quantidade = 0;
 
     @OneToMany(mappedBy = "livro")

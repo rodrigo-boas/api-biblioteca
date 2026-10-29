@@ -134,7 +134,7 @@ class EmprestimoServiceTest {
 
     @Test
     @DisplayName("Deve retornar erro ao empréstimo já ter sido devolvido")
-    void realizarEmprestimo_retornaErro_quandoEmprestimoJaFoiDevolvido() {
+    void registrarDevolucao_retornaErro_quandoEmprestimoJaFoiDevolvido() {
         emprestimo.setLivro(livro);
         emprestimo.setStatus(StatusEmprestimo.DEVOLVIDO);
 
@@ -169,7 +169,7 @@ class EmprestimoServiceTest {
 
     @Test
     @DisplayName("Deve retornar erro quando id do membro não existe")
-    void registrarDevolucao_retornaErro_quandoMembroNaoExiste() {
+    void realizarEmprestimo_retornaErro_quandoMembroNaoExiste() {
         BDDMockito.when(livroRepository.findById(1L)).thenReturn(Optional.of(livro));
         BDDMockito.when(membroRepository.findById(2L)).thenReturn(Optional.empty());
 

@@ -2,7 +2,6 @@ package exercicio.api.model;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.time.LocalDate;

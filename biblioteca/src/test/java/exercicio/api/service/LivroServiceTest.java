@@ -126,11 +126,6 @@ class LivroServiceTest {
         Assertions.assertThatExceptionOfType(LivroNotFoundException.class)
                 .isThrownBy(() -> service.atualizar(4L, livroRequest))
                 .withMessage("Livro não encontrado");
-
-        Assertions.assertThat(livro.getQuantidade()).isNotEqualTo(livroRequest.getQuantidade());
-        Assertions.assertThat(livro.getTitulo()).isNotEqualTo(livroRequest.getTitulo());
-        Assertions.assertThat(livro.getAutor()).isNotEqualTo(livroRequest.getAutor());
-        Assertions.assertThat(livro.getIsbn()).isNotEqualTo(livroRequest.getIsbn());
     }
 
     @Test

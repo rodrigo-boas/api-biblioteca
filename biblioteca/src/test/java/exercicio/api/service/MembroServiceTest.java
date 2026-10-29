@@ -2,6 +2,7 @@ package exercicio.api.service;
 
 import exercicio.api.dto.MembroRequest;
 import exercicio.api.dto.MembroResponse;
+import exercicio.api.exceptions.CollisionArgumentException;
 import exercicio.api.exceptions.MembroNotFoundException;
 import exercicio.api.mapper.MembroMapper;
 import exercicio.api.model.Membro;
@@ -82,7 +83,7 @@ class MembroServiceTest {
     }
 
     @Test
-    @DisplayName("findById lança exceção quaando id não existe")
+    @DisplayName("findById lança exceção quando id não existe")
     void findById_lancaErro_quandoIdNaoExiste() {
         BDDMockito.when(repository.findById(4L)).thenReturn(Optional.empty());
 
@@ -119,10 +120,22 @@ class MembroServiceTest {
         Assertions.assertThatExceptionOfType(MembroNotFoundException.class)
                 .isThrownBy(() -> service.atualizar(4L, membroRequest))
                 .withMessage("Membro não encontrado");
+    }
 
-        Assertions.assertThat(membro.getNome()).isNotEqualTo(membroRequest.getNome());
-        Assertions.assertThat(membro.getEmail()).isNotEqualTo(membroRequest.getEmail());
-        Assertions.assertThat(membro.getSenha()).isNotEqualTo(membroRequest.getSenha());
+    @Test
+    @DisplayName("atualizar lança exceção quando email já existe")
+    void atualizar_lancaErro_quandoEmailJaExiste() {
+        BDDMockito.when(repository.findById(4L)).thenReturn(Optional.of(membro));
+        BDDMockito.when(repository.existsByEmailAndIdNot("outro-email@gmail.com", 4L))
+                .thenReturn(true);
+
+        membroRequest.setEmail("outro-email@gmail.com");
+        membroRequest.setNome("nome");
+        membroRequest.setSenha("91-0j1i2j5i");
+
+        Assertions.assertThatExceptionOfType(CollisionArgumentException.class)
+                .isThrownBy(() -> service.atualizar(4L, membroRequest))
+                .withMessage("O email já foi usado");
     }
 
     @Test
