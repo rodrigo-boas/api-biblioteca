@@ -1,10 +1,12 @@
 package exercicio.api.service;
 
+import exercicio.api.dto.LivroRequest;
 import exercicio.api.dto.MembroRequest;
 import exercicio.api.dto.MembroResponse;
 import exercicio.api.exceptions.CollisionArgumentException;
 import exercicio.api.exceptions.MembroNotFoundException;
 import exercicio.api.mapper.MembroMapper;
+import exercicio.api.model.Livro;
 import exercicio.api.model.Membro;
 import exercicio.api.repository.MembroRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,12 @@ public class MembroService {
         else throw new CollisionArgumentException("O email já foi usado");
     }
 
+    @Transactional
+    public void cadastrarTodos(List<MembroRequest> membros) {
+        List<Membro> list = membros.stream().map(mapper::toMembro).toList();
+        membroRepository.saveAll(list);
+    }
+
     @Transactional(readOnly = true)
     public List<MembroResponse> listAll() {
         return membroRepository.findAll().stream().map(mapper::toResponse).toList();
@@ -48,9 +56,11 @@ public class MembroService {
             throw new CollisionArgumentException("O email já foi usado");
         }
 
-        membro.setNome(membroRequest.getNome());
-        membro.setEmail(membroRequest.getEmail());
-        membro.setSenha(membroRequest.getSenha());
+        Membro membroFinal = mapper.toMembro(membroRequest);
+
+        membro.setNome(membroFinal.getNome());
+        membro.setEmail(membroFinal.getEmail());
+        membro.setSenha(membroFinal.getSenha());
     }
 
     @Transactional

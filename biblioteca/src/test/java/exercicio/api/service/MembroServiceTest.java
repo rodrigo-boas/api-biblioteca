@@ -1,6 +1,7 @@
 package exercicio.api.service;
 
 import exercicio.api.dto.MembroRequest;
+import exercicio.api.dto.MembroRequest;
 import exercicio.api.dto.MembroResponse;
 import exercicio.api.exceptions.CollisionArgumentException;
 import exercicio.api.exceptions.MembroNotFoundException;
@@ -59,6 +60,17 @@ class MembroServiceTest {
     void cadastrar_retornaSucesso() {
         service.cadastrar(membroRequest);
         Mockito.verify(repository).save(Mockito.any());
+    }
+
+    @Test
+    @DisplayName("Cadastra uma coleção de membros com sucesso")
+    void cadastrarTodos_retornaSucesso() {
+        MembroRequest request1 = MembroRequest.builder().nome("pessoa1").build();
+        MembroRequest request2 = MembroRequest.builder().nome("pessoa2").build();
+        MembroRequest request3 = MembroRequest.builder().nome("pessoa3").build();
+
+        service.cadastrarTodos(List.of(request1, request2, request3));
+        Mockito.verify(repository).saveAll(Mockito.any());
     }
 
     @Test

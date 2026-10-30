@@ -3,7 +3,6 @@ package exercicio.api.service;
 import exercicio.api.dto.LivroRequest;
 import exercicio.api.dto.LivroResponse;
 import exercicio.api.exceptions.LivroNotFoundException;
-import exercicio.api.exceptions.NullValueException;
 import exercicio.api.mapper.LivroMapper;
 import exercicio.api.model.Livro;
 import exercicio.api.repository.LivroRepository;
@@ -18,9 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class LivroServiceTest {
@@ -62,6 +58,17 @@ class LivroServiceTest {
     void cadastrar_retornaSucesso() {
         service.cadastrar(livroRequest);
         Mockito.verify(repository).save(Mockito.any());
+    }
+
+    @Test
+    @DisplayName("Cadastra uma coleção de livros com sucesso")
+    void cadastrarTodos_retornaSucesso() {
+        LivroRequest request1 = LivroRequest.builder().autor("autor1").build();
+        LivroRequest request2 = LivroRequest.builder().autor("autor2").build();
+        LivroRequest request3 = LivroRequest.builder().autor("autor3").build();
+
+        service.cadastrarTodos(List.of(request1, request2, request3));
+        Mockito.verify(repository).saveAll(Mockito.any());
     }
 
     @Test

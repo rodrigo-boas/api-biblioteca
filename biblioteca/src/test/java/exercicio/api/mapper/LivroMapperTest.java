@@ -75,4 +75,14 @@ class LivroMapperTest {
 
         Assertions.assertThat(response.getIdEmprestimos()).isEmpty();
     }
+
+    @Test
+    @DisplayName("Retorna um livro com quantidade == 0 quando quantidade == null")
+    void toLivro_retornaLivroComQuantidadeZero() {
+        LivroRequest request = new LivroRequest();
+        request.setQuantidade(null);
+        Livro livro = mapper.toLivro(request);
+
+        Assertions.assertThat(livro.getQuantidade()).isEqualTo(0);
+    }
 }

@@ -27,6 +27,12 @@ public class LivroService {
         livroRepository.save(cadastro);
     }
 
+    @Transactional
+    public void cadastrarTodos(List<LivroRequest> livros) {
+        List<Livro> list = livros.stream().map(mapper::toLivro).toList();
+        livroRepository.saveAll(list);
+    }
+
     @Transactional(readOnly = true)
     public List<LivroResponse> listAll() {
         return livroRepository.findAll().stream().map(mapper::toResponse).toList();
@@ -42,10 +48,12 @@ public class LivroService {
     public void atualizar(Long id, LivroRequest livroRequest) {
         Livro livro = livroRepository.findById(id).orElseThrow(LivroNotFoundException::new);
 
-        livro.setQuantidade(livroRequest.getQuantidade());
-        livro.setAutor(livroRequest.getAutor());
-        livro.setIsbn(livroRequest.getIsbn());
-        livro.setTitulo(livroRequest.getTitulo());
+        Livro livroFinal = mapper.toLivro(livroRequest);
+
+        livro.setQuantidade(livroFinal.getQuantidade());
+        livro.setAutor(livroFinal.getAutor());
+        livro.setIsbn(livroFinal.getIsbn());
+        livro.setTitulo(livroFinal.getTitulo());
     }
 
     @Transactional

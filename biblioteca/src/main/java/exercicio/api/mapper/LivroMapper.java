@@ -17,6 +17,7 @@ public interface LivroMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "emprestimos", ignore = true)
+    @Mapping(source = "quantidade", target = "quantidade", defaultValue = "0")
     Livro toLivro(LivroRequest livroRequest);
 
     @Mapping(source = "emprestimos", target = "idEmprestimos", qualifiedByName = "getIdList")
