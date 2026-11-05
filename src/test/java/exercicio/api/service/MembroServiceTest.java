@@ -65,12 +65,44 @@ class MembroServiceTest {
     @Test
     @DisplayName("Cadastra uma coleção de membros com sucesso")
     void cadastrarTodos_retornaSucesso() {
-        MembroRequest request1 = MembroRequest.builder().nome("pessoa1").build();
-        MembroRequest request2 = MembroRequest.builder().nome("pessoa2").build();
-        MembroRequest request3 = MembroRequest.builder().nome("pessoa3").build();
+        MembroRequest request1 = MembroRequest.builder().nome("pessoa1").email("pessoa1@gmail.com").build();
+        MembroRequest request2 = MembroRequest.builder().nome("pessoa2").email("pessoa2@gmail.com").build();
+        MembroRequest request3 = MembroRequest.builder().nome("pessoa3").email("pessoa3@gmail.com").build();
 
         service.cadastrarTodos(List.of(request1, request2, request3));
         Mockito.verify(repository).saveAll(Mockito.any());
+    }
+
+    @Test
+    @DisplayName("Lança erro com uma coleção de membros que contenha email duplicado na própria coleção")
+    void cadastrarTodos_lancaErro_quandoPassaListaComEmailDuplicado() {
+        MembroRequest request1 = MembroRequest.builder().nome("pessoa1").email("pessoa1@gmail.com").build();
+        MembroRequest request2 = MembroRequest.builder().nome("pessoa2").email("duplicado@gmail.com").build();
+        MembroRequest request3 = MembroRequest.builder().nome("pessoa3").email("duplicado@gmail.com").build();
+
+        Assertions.assertThatExceptionOfType(CollisionArgumentException.class)
+                .isThrownBy(() -> service.cadastrarTodos(List.of(request1, request2, request3)))
+                .withMessage("Emails duplicados na lista");
+
+        Mockito.verify(repository, Mockito.never()).saveAll(Mockito.any());
+    }
+
+    @Test
+    @DisplayName("Lança erro com uma coleção de membros que contenha email duplicado com o banco")
+    void cadastrarTodos_lancaErro_quandoPassaListaComEmailDuplicadoNoBanco() {
+        MembroRequest request1 = MembroRequest.builder().nome("pessoa1").email("pessoa1@gmail.com").build();
+        MembroRequest request2 = MembroRequest.builder().nome("pessoa2").email("pessoa2@gmail.com").build();
+        MembroRequest request3 = MembroRequest.builder().nome("pessoa3").email("pessoa3@gmail.com").build();
+
+        List<MembroRequest> list = List.of(request1, request2, request3);
+
+        BDDMockito.when(repository.existsByEmailIn(Mockito.any())).thenReturn(true);
+
+        Assertions.assertThatExceptionOfType(CollisionArgumentException.class)
+                .isThrownBy(() -> service.cadastrarTodos(list))
+                .withMessage("Email já existe");
+
+        Mockito.verify(repository, Mockito.never()).saveAll(Mockito.any());
     }
 
     @Test

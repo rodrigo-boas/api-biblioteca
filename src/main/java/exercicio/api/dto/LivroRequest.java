@@ -1,5 +1,6 @@
 package exercicio.api.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -20,5 +21,6 @@ public class LivroRequest {
     private String isbn;
 
     @Builder.Default
+    @Min(value = 0, message = "Quantidade não pode ser negativa")
     private Integer quantidade = 0;
 }

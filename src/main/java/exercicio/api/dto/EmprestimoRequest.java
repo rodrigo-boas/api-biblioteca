@@ -1,6 +1,7 @@
 package exercicio.api.dto;
 
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -17,10 +18,11 @@ public class EmprestimoRequest {
     @NotNull(message = "idLivro não pode ser vazio")
     private Long idLivro;
 
-    @NotNull(message = "idLivro não pode ser vazio")
+    @NotNull(message = "idMembro não pode ser vazio")
     private Long idMembro;
 
     @NotNull(message = "Data não pode ser vazio")
+    @FutureOrPresent
     private LocalDate dataPrevistaDevolucao;
 
 

@@ -19,6 +19,7 @@ public interface MembroMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "dataCadastro", expression = "java(LocalDate.now())")
     @Mapping(target = "emprestimos", ignore = true)
+    @Mapping(target = "email", expression = "java(membroRequest.getEmail().trim().toLowerCase())")
     Membro toMembro(MembroRequest membroRequest);
 
     @Mapping(source = "emprestimos", target = "idEmprestimos", qualifiedByName = "getListId")

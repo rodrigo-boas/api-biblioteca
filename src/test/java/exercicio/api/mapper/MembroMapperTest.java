@@ -52,6 +52,15 @@ class MembroMapperTest {
     }
 
     @Test
+    @DisplayName("Retorna um Membro a partir de um MembroRequest com email em minúsculas e sem espaços")
+    void toMembro_returnEmailFormated() {
+        MembroRequest request = new MembroRequest("Rodrigo", "    RodriGO@gmaiL.coM  ", "461246");
+        Membro membroTransformado = mapper.toMembro(request);
+
+        Assertions.assertThat(membroTransformado.getEmail()).isEqualTo("rodrigo@gmail.com");
+    }
+
+    @Test
     @DisplayName("Retorna um MembroResponse a partir de um Membro com todos os campos do response preenchidos")
     void toResponse() {
         MembroResponse response = mapper.toResponse(membro);
