@@ -9,6 +9,7 @@ import exercicio.api.model.Membro;
 import exercicio.api.repository.MembroRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +22,15 @@ public class MembroService {
 
     private final MembroMapper mapper;
     private final MembroRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void cadastrar(MembroRequest membro) {
         Membro cadastro = mapper.toMembro(membro);
-        if (!repository.existsByEmail(cadastro.getEmail())) repository.save(cadastro);
+        if (!repository.existsByEmail(cadastro.getEmail())) {
+            cadastro.setSenha(passwordEncoder.encode(cadastro.getSenha()));
+            repository.save(cadastro);
+        }
         else throw new CollisionArgumentException("O email já foi usado");
     }
 
@@ -38,6 +43,8 @@ public class MembroService {
 
         if (distinct != emails.size()) throw new CollisionArgumentException("Emails duplicados na lista");
         else if (repository.existsByEmailIn(emails)) throw new CollisionArgumentException("Email já existe");
+
+        list.forEach(m -> m.setSenha(passwordEncoder.encode(m.getSenha())));
         repository.saveAll(list);
     }
 
@@ -56,15 +63,15 @@ public class MembroService {
     public void atualizar(Long id, MembroRequest membroRequest) {
         Membro membro = repository.findById(id).orElseThrow(MembroNotFoundException::new);
 
-        if (repository.existsByEmailAndIdNot(membroRequest.getEmail(), id)) {
+        Membro membroFinal = mapper.toMembro(membroRequest);
+
+        if (repository.existsByEmailAndIdNot(membroFinal.getEmail(), id)) {
             throw new CollisionArgumentException("O email já foi usado");
         }
 
-        Membro membroFinal = mapper.toMembro(membroRequest);
-
         membro.setNome(membroFinal.getNome());
         membro.setEmail(membroFinal.getEmail());
-        membro.setSenha(membroFinal.getSenha());
+        membro.setSenha(passwordEncoder.encode(membroFinal.getSenha()));
     }
 
     @Transactional
