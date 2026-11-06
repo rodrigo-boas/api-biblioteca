@@ -3,9 +3,12 @@ package exercicio.api.service;
 import exercicio.api.dto.MembroRequest;
 import exercicio.api.dto.MembroResponse;
 import exercicio.api.exceptions.CollisionArgumentException;
+import exercicio.api.exceptions.LivroNotFoundException;
 import exercicio.api.exceptions.MembroNotFoundException;
 import exercicio.api.mapper.MembroMapper;
+import exercicio.api.model.Emprestimo;
 import exercicio.api.model.Membro;
+import exercicio.api.model.enums.StatusEmprestimo;
 import exercicio.api.repository.MembroRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +79,13 @@ public class MembroService {
 
     @Transactional
     public void delete(Long id) {
-        repository.findById(id).orElseThrow(MembroNotFoundException::new);
+        List<Emprestimo> emprestimos = repository.findById(id)
+                .orElseThrow(MembroNotFoundException::new).getEmprestimos();
+
+        if (!emprestimos.isEmpty()) {
+            throw new CollisionArgumentException("O membro não pode ser deletado por possuir empréstimos registrados");
+        }
+
         repository.deleteById(id);
     }
 }

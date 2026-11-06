@@ -5,6 +5,7 @@ import exercicio.api.dto.MembroResponse;
 import exercicio.api.exceptions.CollisionArgumentException;
 import exercicio.api.exceptions.MembroNotFoundException;
 import exercicio.api.mapper.MembroMapper;
+import exercicio.api.model.Emprestimo;
 import exercicio.api.model.Membro;
 import exercicio.api.repository.MembroRepository;
 import org.assertj.core.api.Assertions;
@@ -223,14 +224,16 @@ class MembroServiceTest {
     }
 
     @Test
-    @DisplayName("delete lanca erro quando id não existe")
-    void delete_lancaErro_quandoIdNaoExiste() {
-        BDDMockito.when(repository.findById(5L)).thenReturn(Optional.empty());
+    @DisplayName("delete lanca erro quando membro possui emprestimo")
+    void delete_lancaErro_quandoEmprestimoExiste() {
+        membro.setEmprestimos(List.of(new Emprestimo()));
 
-        Assertions.assertThatExceptionOfType(MembroNotFoundException.class)
-                .isThrownBy(() -> service.delete(5L))
-                .withMessage("Membro não encontrado");
+        BDDMockito.when(repository.findById(4L)).thenReturn(Optional.of(membro));
 
-        Mockito.verify(repository, Mockito.never()).deleteById(5L);
+        Assertions.assertThatExceptionOfType(CollisionArgumentException.class)
+                .isThrownBy(() -> service.delete(4L))
+                .withMessage("O membro não pode ser deletado por possuir empréstimos registrados");
+
+        Mockito.verify(repository, Mockito.never()).deleteById(4L);
     }
 }
